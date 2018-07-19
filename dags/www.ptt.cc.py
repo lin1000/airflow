@@ -13,10 +13,18 @@ from jobs.www_ptt_cc import crawl_bbs_beauty
 from jobs.www_ptt_cc import crawl_bbs_tennis
 from airflow.operators.python_operator import PythonOperator
 
-def bbs_beauty():
-    crawl_bbs_beauty.operator_trigger()
+def bbs_beauty(**kwargs):
+    print(str(kwargs))
+    execution_date = kwargs['execution_date']
+    crawl_bbs_beauty.operator_trigger(execution_date)
+    print("execution_date="+ str(execution_date))
+    print("execution_date="+ str(type(execution_date)))
+    xcom_return = {}
+    xcom_return.update({'execution_date':execution_date})
+    return xcom_return
 
-def bbs_tennis():
+def bbs_tennis(**kwargs):
+    print(str(kwargs))
     crawl_bbs_tennis.operator_trigger()
 
 default_args = {
@@ -41,9 +49,15 @@ dag = DAG(
 
 
 
-bbs_beauty_op = PythonOperator(task_id='bbs_beauty',python_callable=bbs_beauty,dag=dag)
+bbs_beauty_op = PythonOperator(task_id='bbs_beauty',
+                                provide_context=True,
+                                python_callable=bbs_beauty,
+                                dag=dag)
 
-bbs_tennis_op = PythonOperator(task_id='bbs_tennis',python_callable=bbs_tennis,dag=dag)                                 
+bbs_tennis_op = PythonOperator(task_id='bbs_tennis',
+                                provide_context=True,
+                                python_callable=bbs_tennis,
+                                dag=dag)                                 
 dummy_operator = DummyOperator(
   task_id='www.ptt.cc_task',
   dag=dag,

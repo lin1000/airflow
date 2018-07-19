@@ -6,6 +6,7 @@ import re
 import urllib.request
 import json
 import sys
+import datetime
 
 """
 This is a sample modified from the following tutorial
@@ -38,6 +39,7 @@ def get_articles(dom, date):
 
     articles = []  # 儲存取得的文章資料
     divs = soup.find_all('div', 'r-ent')
+    min_date = datetime.datetime.now()
 
     for d in divs:
         """
@@ -77,7 +79,20 @@ def get_articles(dom, date):
                     'href': href,
                     'push_count': push_count
                 })
-    return articles, prev_url
+        elif datetime.datetime.strptime(str(min_date.year)+"/"+d.find('div', 'date').string.strip(), '%Y/%m/%d') < min_date:
+
+            # 取得文章連結及標題
+            if d.find('a'):  # 有超連結，表示文章存在，未被刪除
+                title = d.find('a').string
+                print("title = "+ title)
+                if title.startswith("[公告]"):
+                    pass
+                else:
+                    print("before min_date="+ str(min_date))
+                    min_date = datetime.datetime.strptime(str(min_date.year)+"/"+d.find('div', 'date').string.strip(), '%Y/%m/%d')
+                    print("after min_date="+ str(min_date))                    
+            
+    return articles, prev_url, min_date
 
 
 def parse(dom):
@@ -119,22 +134,26 @@ def save(img_urls, title):
                     if not img_url.endswith('.jpg'):
                         img_url += '.jpg'
                 fname = img_url.split('/')[-1]
-                urllib.request.urlretrieve(img_url, os.path.join(target_dir_name, fname))
-                print("img_url="+ img_url)
+                if not os.path.exists(os.path.join(target_dir_name, fname)):
+                    urllib.request.urlretrieve(img_url, os.path.join(target_dir_name, fname))
+                    print("fetched img_url="+ img_url)
+                else:
+                    print(" === Photo existed " + os.path.join(target_dir_name, fname) + " pass ===")
+                
         except Exception as e:
             print(" === Skipping post " + dname + " ===")
             print(e)
 
-def operator_trigger():
+def operator_trigger(execution_date):
     current_page = get_web_page(PTT_URL + '/bbs/'+BOARD+'/index.html')
     if current_page:
-        articles = []  # 全部的今日文章
-        date = time.strftime("%m/%d").lstrip('0')  # 今天日期, 去掉開頭的 '0' 以符合 PTT 網站格式
-        current_articles, prev_url = get_articles(current_page, date)  # 目前頁面的今日文章
-        while current_articles:  # 若目前頁面有今日文章則加入 articles，並回到上一頁繼續尋找是否有今日文章
+        articles = []  # 全部的文章 for execution_date
+        date = execution_date.strftime("%m/%d").lstrip('0')  # execution_date 去掉開頭的 '0' 以符合 PTT 網站格式
+        current_articles, prev_url, min_date = get_articles(current_page, date)  # 目前頁面的今日文章
+        while current_articles or execution_date <= min_date:  # 若目前頁面有execution_date文章則加入 articles，並回到上一頁繼續尋找是否有execution_Date文章
             articles += current_articles
             current_page = get_web_page(PTT_URL + prev_url)
-            current_articles, prev_url = get_articles(current_page, date)
+            current_articles, prev_url, min_date = get_articles(current_page, date)
 
         # 已取得文章列表，開始進入各文章讀圖
         for article in articles:
@@ -146,7 +165,7 @@ def operator_trigger():
                 article['num_image'] = len(img_urls)
 
         # 儲存文章資訊
-        with open('data.json', 'w', encoding='utf-8') as f:
+        with open('data'+execution_date.strftime("%Y-%m-%d")+'.json', 'w', encoding='utf-8') as f:
             json.dump(articles, f, indent=2, sort_keys=True, ensure_ascii=False)
 
 
