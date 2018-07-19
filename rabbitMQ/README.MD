@@ -28,6 +28,8 @@ python durable_queue/receive_task_basic_ack_basic_ops.py
 
 ```bash
 docker pull rabbitmq:3-management
+docker stop lin1000-rabbitmq 
+docker start lin1000-rabbitmq 
 docker run -d -p 5672:5672 -p 15672:15672  --name lin1000-rabbitmq rabbitmq:3-management
 docker exec -it lin1000-rabbitmq /bin/bash
 rabbitmqctl list_queues
