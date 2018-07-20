@@ -2,8 +2,9 @@
 
 ## Technology Component Used :
 * Airflow 1.9.0 with CeleryExector
-* PostgreSQL
-* RabbitMQ
+* PostgreSQL (Docker)
+* RabbitMQ (Docker)
+* MongoDB (Docker)
 
 ## realtime data pipeline for sports
 
