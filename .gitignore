@@ -4,3 +4,4 @@ logs
 postgreSQL/pgdata
 *.pyc
 bbs
+mongodb/data

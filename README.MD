@@ -6,8 +6,17 @@
 * RabbitMQ (Docker)
 * MongoDB (Docker)
 
-## realtime data pipeline for sports
 
+## Commands to Activate
+```bash
+docker-compose up -d
+source activate activate xxx_py3
+source setenv.sh
+airflow scheduler
+airflow webserver -p 8080
+```
+
+## realtime data pipeline for crawler
 The goal of this repo is to design a scalable data pipeline to collect, aggregate, and analyze sensors data from persoanl device Linkit + mpu9250. 
 
 
