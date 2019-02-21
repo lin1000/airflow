@@ -19,6 +19,9 @@ docker run \
     -d \
     mongo --auth
 
+## Useful commands to list important attributes
+docker ps --format "{{.Names }}\t\t{{ .Command}}\t\t{{ .Status}}" --no-trunc
+
 ##Create User (Verified)
 docker exec -it lin1000-mongodb mongo admin
 db.createUser({ user: 'lin1000', pwd: 'password', roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] });
@@ -40,11 +43,6 @@ the idea is that you first create a user that is only used for administrating ot
 ---------------------------------------------------------------------------------
 For existing use: db.grantRolesToUser('admin',[{ role: "root", db: "admin" }]) – ostati May 22 '17 at 19:53
 ---------------------------------------------------------------------------------
-
-* RabbitMQ Admin UI (guest / guest) [http://localhost:15672/]
-
-
-
 
 
 fmi.

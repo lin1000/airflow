@@ -11,10 +11,10 @@ import tweepy
 
 log = logging.getLogger(__name__)
 
-consumer_key = 'X'
-consumer_secret = 'X'
-access_token = '60635122-X'
-access_token_secret = 'X'
+consumer_key = 'LpwQtgRjXmCFDPihxGWlnAA6M'
+consumer_secret = '6cIdQJVKIRp3CKwqheu6sQEdjWam16zLlFcci4KelZhevaZJjP'
+access_token = '60635122-6d6xVkFpeddtPQB3ltKeKnFak8eOkzg28vtsM9zC0'
+access_token_secret = '9dbXPZTuTQJe4ipXU9QWYr9JtMNo4pTQLfx5SMdDbitQl'
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
